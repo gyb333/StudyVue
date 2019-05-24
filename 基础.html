@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+    <!-- 1.0 导入vuejs 
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script> 学习使用最新的 
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>生产环境使用
+    -->
+    
+    <script src="vue.js"></script> 
+</head>
+<body>
+	{{ name }}
+	<div id="app">
+	<!-- 在Vue接管区域中使用Vue的系统指令呈现数据
+    这些指令就相当于是MVVM中的View这个角色 -->
+        插值表达式
+        <br>
+        {{ name }}
+        <!--  
+            v-cloak指令保持在元素上直到关联实例结束编译后自动移除，v-cloak和 CSS 规则如 [v-cloak] { display: none } 
+        一起用时，这个指令可以隐藏未编译的 Mustache 标签直到实例准备完毕。 通常用来防止{{}}表达式闪烁问题
+            在span上加上 v-cloak和css样式控制以后，浏览器在加载的时候会先把span隐藏起来，
+        知道 Vue实例化完毕以后，才会将v-cloak从span上移除，那么css就会失去作用而将span中的内容呈现给用户 -->
+        <span v-cloak>Message: {{ msg.message }}</span>
+
+        {{ msg.number + 1 }}
+        {{ msg.ok ? 'YES' : 'NO' }}
+        {{ msg.message.split('').reverse().join('') }}
+        <div v-text="msg"></div>
+        <div v-html="rawHtml"></div>
+        <!--
+        1、在表单控件或者组件上创建双向绑定 
+        2、v-model仅能在如下元素中使用： input select textarea components（Vue中的组件）
+        -->
+            <input type="text" v-model="name" />  
+            <div v-for="item in items">
+                    {{ item.text }}
+            </div>
+        <div v-for="(item, index) in items">{{item}} ,{{index}}</div>
+        <div v-for="(val, key) in user">{{val}}, {{key}}</div>
+        <div v-for="(val, key, index) in user">{{val}} ,{{key}} ,{{index}}</div>  
+        <div v-for="item in items" :key="item.id"> {{ item.text }}</div>
+        <h1 v-if="isShow">Yes</h1>
+        <h1 v-else>No</h1>
+        <h1 v-show="isShow">Yes</h1>
+          <!-- 方法处理器 -->
+    <button v-on:click="doThis"></button>
+    <!-- 内联语句 -->
+    <button v-on:click="doThat('hello', $event)">doThat</button>
+    <!-- 缩写 -->
+    <button @click="doThis"></button>
+    <!-- 停止冒泡 -->
+    <button @click.stop="doThis">stop</button>
+    <!-- 阻止默认行为 -->
+    <button @click.prevent="doThis">prevent</button>
+    <!-- 阻止默认行为，没有表达式 -->
+    <form @submit.prevent></form>
+    <!--  串联修饰符 -->
+    <button @click.stop.prevent="doThis">stop.prevent</button>
+
+
+
+    
+    </div>
+  
+</body>
+<script>
+// 2.0 实例化Vue对象
+//vm :叫做MVVM中的 View Model
+var msgdata={message:"qwer.1234",number:1,ok:true}
+var vm = new Vue({
+	el:'#app', //表示当前vue对象接管app的div区域
+	data: {
+		name:'黑马程序员'  // 相当于是MVVM中的Model这个角色
+        ,msg:msgdata,
+        rawHtml:'<h1>hello ivan</h1>',
+        items:[{id:1001,text:'item1'},{id:1002,text:'item2'}],
+        user:{name:'value',age:32},
+        isShow:true
+	},
+    methods:{
+		doThis:function(){
+			alert('doThis');
+		},
+		doThat:function(val,event){
+			alert('doThat '+val);
+            alert(event);
+		}
+    }
+});
+
+ 
+</script>
+</html>
