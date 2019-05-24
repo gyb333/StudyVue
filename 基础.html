@@ -2,13 +2,35 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+    <title>Document</title>
+    <style>
+		#tb{
+			width: 800px;
+			border-collapse: collapse;
+			margin: 20px auto;
+		}
+		#tb th{
+			background-color: #0094ff;
+			color:white;
+			font-size: 16px;
+			padding: 5px;
+			text-align: center;
+			border: 1px solid black;
+		}
+		#tb td{
+		
+			padding: 5px;
+			text-align: center;
+			border: 1px solid black;
+		}
+	</style>
     <!-- 1.0 导入vuejs 
     <script src="https://cdn.jsdelivr.net/npm/vue"></script> 学习使用最新的 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>生产环境使用
     -->
     
     <script src="vue.js"></script> 
+    <script src="moment.js"></script> 
 </head>
 <body>
 	{{ name }}
@@ -61,7 +83,33 @@
     <button @click.stop.prevent="doThis">stop.prevent</button>
 
 
-    实现品牌列表数据展示
+    实现品牌列表数据展示<br>
+    <input type="text" v-model="id">
+    <input type="text" v-model="name">
+    <button @click="addItem">添加项</button>
+    <br>
+
+    <input type="text" v-focus placeholder="请输入搜索内容"  v-model="searchText">
+
+    <table class="list">
+        <tr>
+            <th>编号</th>
+            <th>名称</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        <tr v-show="items.length ==0">
+            <td colspan="4">当前列表没有任何数据</td>
+        </tr>
+        <!--<tr v-for="item in items  | filterBy searchText in 'name' ">-->
+        <tr v-for="item in filterItems">
+            <td>{{item.id}}</td>
+            <td>{{item.name}}</td>
+            <td>{{moment(item.ctime).format('YYYY-MM-DD HH:mm:ss')}}</td>
+            <td><a href="javascript:void(0)" @click="removeItem(item.id)">删除</a>></td>
+        </tr>
+    </table>
+    
     
     </div>
   
@@ -69,17 +117,39 @@
 <script>
 // 2.0 实例化Vue对象
 //vm :叫做MVVM中的 View Model
-var msgdata={message:"qwer.1234",number:1,ok:true}
+var msgdata={message:"qwer.1234",number:1,ok:true};
+
+Vue.directive('focus',function(){
+	this.el.focus();
+});
+
 var vm = new Vue({
 	el:'#app', //表示当前vue对象接管app的div区域
 	data: {
 		name:'黑马程序员'  // 相当于是MVVM中的Model这个角色
         ,msg:msgdata,
         rawHtml:'<h1>hello ivan</h1>',
-        items:[{id:1001,text:'item1'},{id:1002,text:'item2'}],
+        items:[
+            {id:1001,name:"gyb",text:'item1',ctime:new Date()},
+            {id:1002,name:'admin',text:'item2',ctime:new Date}
+            ],
+        id:0,
+        name:'',
+        searchText:'',  //自动获取到用户输入的筛选条件值
         user:{name:'value',age:32},
         isShow:true
-	},
+    },
+    computed: {
+        filterItems: function () {
+            // `this` points to the vm instance
+            var searchText = this.searchText;
+            var items = this.items;
+            return items.filter(function (item) {
+                //(item.name+='') 转换为字符串类型
+                return item.name.toLowerCase().indexOf(searchText.toLowerCase()) != -1
+            });
+        }
+    },
     methods:{
 		doThis:function(){
 			alert('doThis');
@@ -87,7 +157,23 @@ var vm = new Vue({
 		doThat:function(val,event){
 			alert('doThat '+val);
             alert(event);
-		}
+        },
+        addItem:function(){
+            var item={id:this.id,name:this.name,ctime:new Date()};
+            this.items.push(item);
+            this.id=0;
+            this.name='';
+        },
+        removeItem:function(id){
+            if(!confirm('您确认要删除吗？')){
+                return;
+            }
+            
+            var index = this.items.findIndex(function(each){
+                return each.id===id;
+            });
+            this.items.splice(index,1);
+        }
     }
 });
 
