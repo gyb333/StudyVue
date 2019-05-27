@@ -80,12 +80,12 @@
     <!-- 阻止默认行为，没有表达式 -->
     <form @submit.prevent></form>
     <!--  串联修饰符 -->
-    <button @click.stop.prevent="doThis">stop.prevent</button>
-
+    <button @click.stop.prevent="doThis">stop.prevent</button><br>
+    {{items | json | uppercase}}<!-- 全局过滤器-->
 
     实现品牌列表数据展示<br>
     <input type="text" v-model="id">
-    <input type="text" v-model="name">
+    <input type="text" v-model="name" @keydown.Enter="addItem">
     <button @click="addItem">添加项</button>
     <br>
 
@@ -106,6 +106,8 @@
             <td>{{item.id}}</td>
             <td>{{item.name}}</td>
             <td>{{moment(item.ctime).format('YYYY-MM-DD HH:mm:ss')}}</td>
+            <td>{{item.ctime | datefmt1('yyyy-mm-dd') }}</td>
+            <td>{{item.ctime | datefmt('-') }}</td>
             <td><a href="javascript:void(0)" @click="removeItem(item.id)">删除</a>></td>
         </tr>
     </table>
@@ -119,10 +121,41 @@
 //vm :叫做MVVM中的 View Model
 var msgdata={message:"qwer.1234",number:1,ok:true};
 
+//利用自定义属性指令实现自动获取焦点功能
 Vue.directive('focus',function(){
-	this.el.focus();
+	this.el.focus();//实现文本框的自动获取焦点 
+});
+Vue.directive('color',function(){
+    this.el.style.color =this.vm[this.expression];
 });
 
+// //利用自定义属性指令实现日期格式化
+// Vue.elementDirective('datefmt',{ 
+//     bind:function(){ 
+//         var v=this.el.attributes[0].value;	 
+//         var date = new Date(this.vm[v]); 
+//         var year = date.getFullYear(); 
+//         var m = date.getMonth() + 1; 
+//         var d = date.getDate(); 
+//         var fmtStr = year+'-'+m +'-'+d;//输出： yyyy-mm-dd 
+//         this.el.innerText = fmtStr;      
+//     }
+// });
+
+// 1.0 定义全局过滤器
+Vue.filter('datefmt1',function(input,formatstring){
+	var res= '';
+	var year = input.getFullYear();
+	var month = input.getMonth() + 1;
+	var day = input.getDate();
+	if(formatstring == 'yyyy-mm-dd'){
+		res = year +'-' + month +'-'+ day;
+	}else{
+		res = year +'-' + month +'-'+ day + ' 03:09:18';
+	}
+
+	return res;
+});
 var vm = new Vue({
 	el:'#app', //表示当前vue对象接管app的div区域
 	data: {
@@ -174,7 +207,19 @@ var vm = new Vue({
             });
             this.items.splice(index,1);
         }
-    }
+    },
+    filters:{
+            //定义在 VM中的filters对象中的所有过滤器都是私有过滤器
+            datefmt:function(input,splicchar){
+                var date = new Date(input); 
+                var year = date.getFullYear();
+                var m = date.getMonth() + 1;
+                var d = date.getDate();         
+                var fmtStr = year+splicchar+m +splicchar+d;
+                return fmtStr+"私有"; //返回输出结果
+            }
+        }
+
 });
 
 

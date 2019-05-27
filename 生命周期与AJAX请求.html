@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<!-- 1.0 按照先后顺序导入vuejs和vue-resourcejs -->
+	<script src="vue.js"></script>
+	<script src="vue-resource.min.js"></script>
+
+</head>
+<body>
+	<div id="app">
+	{{ obj | json }}
+		<button @click = "getdata">get请求</button>
+        <button @click="postdata">post提交数据</button>
+        <button @click="getjsonp">jsonp请求</button>
+	</div>
+</body>
+
+<script>
+new Vue({
+	el :'#app',
+	data:{
+		obj:null
+    },
+	beforeCreate:function(){
+		console.log('1.0 beforeCreate',this.msg);
+	}
+	,
+	created:function(){
+		console.log('2.0 created',this.msg);
+	}
+	,
+	beforeMount:function(){
+		console.log('3.0 beforeMount',this.msg);
+	}
+	,
+	mounted:function(){
+		console.log('4.0 mounted',this.msg);
+    },
+    //页面更新的时候触发
+    beforeUpdate:function() {
+        console.log('5.0 beforeUpdate',this.msg);
+    },
+    updated:function(){
+        console.log('6.0 updated',this.msg);
+    },
+    //组件激活时使用
+    activated:function(){
+        console.log('7.0 activated',this.msg);
+    },
+    //组件停用时使用
+    deactivated:function() {
+        console.log('8.0 deactivated',this.msg);
+    },
+    //VM实例销毁时触发
+    beforeDestroy:function(){
+        console.log('9.0 beforeDestroy',this.msg);
+    },
+    destroyed:function(){
+        console.log('10.0 destroyed',this.msg);
+    },
+	methods:{
+		getdata:function(){
+			// 1.0 请求的url
+			var url = 'http://vueapi.ittun.com/api/getprodlist'
+
+			// 2.0 利用 vue-resource发出ajax的get请求
+			this.$http.get(url)  //发出请求
+			.then(function(response){
+                console.log(response.body)
+				/**response.body 就是获取到 http://vueapi.ittun.com/api/getprodlist 响应回来的数据格式为：
+				{
+				  "status": 0,
+				  "message": [
+				    {
+				      "id": 1,
+				      "name": "奥迪",
+				      "ctime": "2017-02-07T10:32:07.000Z"
+				    },
+				    {
+				      "id": 2,
+				      "name": "宝马",
+				      "ctime": "2017-02-07T10:32:17.000Z"
+				    }
+				  ]
+				}*/
+				this.obj = response.body;
+
+            }, function(err){
+                //err是异常数据
+                }); // 获取服务器响应回来的数据
+        },
+        postdata:function(){
+			// 将数据通过vue-resource的post方法提交给http://vueapi.ittun.com/api/addproduct
+			 var url = 'http://vueapi.ittun.com/api/addproduct';
+
+			 // 2.0 调用 $http.post(url,传入到服务器的请求报文体的数据,{emulateJSON:true})方法
+			 this.$http.post(url,{name:'奔驰'},{emulateJSON:true})
+			 .then(function(response){
+			 	alert(response.body.message);
+			 });
+        },
+        //jsonp请求主要用来解决ajax跨域请求问题，使用jsonp实现跨域首先要保证服务器api支持jsonp请求的格式
+        getjsonp:function(){
+			// 利用vue-resource中的jsonp方法实现跨域请求数据，这里注意的是
+			// url后面不需要跟callback=fn这个参数了，jsonp方法会自动加上
+			this.$http.jsonp('http://vueapi.ittun.com/api/jsonp')
+			.then(function(response){
+				// 将服务器中的数据获取赋值给obj
+				this.obj = response.body;
+			})
+		}
+	}
+});
+</script>
+</html>

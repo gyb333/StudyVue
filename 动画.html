@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+    <link rel="stylesheet" href="animate.css">
+	 <style>
+		.show-enter-active,.show-leave-active{
+			transition:all 0.4s ease;
+			padding-left: 10px;
+		}
+
+		.show-enter,.show-leave-active{
+			padding-left: 100px;
+		}
+
+        .show{
+			transition:all 0.4s ease;
+		}
+		
+	 </style>
+
+	<script src="vue.js"></script>
+    <!-- 使用动画的步骤总结： 
+        1.0使用原始css实现动画
+        2.0使用animate.css实现动画
+        3.0使用钩子函数实现动画效果
+	 -->
+
+</head>
+<body>
+	<div id="app">
+	<button @click="toggle">显示和隐藏数据</button><br>
+        <span v-show="isshow" transition="show" >{{msg}}</span><br>
+        <transition name="show">
+                <span v-show="isshow">{{msg}}</span>
+        </transition>
+        <br>
+        <transition enter-active-class='fadeInRight' 
+				leave-active-class="fadeOutRight" >
+		<div v-show="isshow" class="animated" class="show">{{msg}}</div>
+        </transition>
+        <br>
+        <transition @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
+                <div v-if="isshow" class="show">{{msg}}</div>
+        </transition>
+	</div>
+</body>
+<script>
+
+new Vue({
+	el :'#app',
+	data:{
+		isshow :false,
+		msg:'hello vuejs'
+	},
+	methods:{
+		toggle:function(){
+			this.isshow = !this.isshow;
+        },
+        //使用钩子函数实现动画效果
+		beforeEnter:function(el){
+			el.style.transform = "translate(100px,0)";
+		},
+		enter:function(el,done){
+			el.offsetWidth;
+
+			el.style.transform = "translate(0px,0)";
+
+			done();
+		},
+		afterEnter:function(el){
+			this.isshow =  !this.isshow;
+		}
+	}
+});
+</script>
+</html>

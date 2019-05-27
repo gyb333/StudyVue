@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="vue.js"></script>
+</head>
+<body>
+    <template id="account">
+        <div>
+                {{msg}}
+                <a href="#" @click="login">登录</a>  |  <a href="#">注册</a>                
+        </div>              
+    </template>
+    <template id="sub">
+        <div>
+            <h1>{{id}}</h1><br>
+            <button @click="senddata">发送数据给父组件</button>
+        </div>
+    </template>
+
+    <template id="com">
+            <div>
+                <h1>{{subname}}</h1><br>
+                <h1>这是一个子组件</h1>
+                 
+            </div>
+        </template>
+	<div id="app">
+            
+	    <account></account>
+		<login></login>
+        <register></register>
+
+        
+
+        <a href="#" @click="cname='login'">登录</a> | 
+		<a href="#" @click="cname='register'">注册</a>
+        <!-- 利用component标签中的 :is 参数来进行组件的切换 -->
+        <component :is="cname"></component>
+
+        <button @click="getdom">获取dom对象</button>
+		<div ref="mydiv" id="div1">hello v-el</div>
+
+	    <button @click="getcom">获取组件对象</button>
+        <com ref="mysub"></com>
+        
+        <!-- 2.0 通过在父组件中调用子组件的时候利用 :绑定对应的props中定义的参数再讲值传递给子组件即可 -->
+        <sub :id="id"> </sub>
+        <sub v-on:send="getdata"></sub>
+
+
+	</div>
+</body>
+<script>
+// 1.0 定义一个全局组件写法1
+// 定义组件
+var login = Vue.extend({
+	template:'<h1>登录页面</>'
+});
+
+// 注册组件
+Vue.component('login',login);
+
+// 2.0 定义一个全局组件写法2：
+Vue.component('register',{
+	template:'<h1>注册页面</>'
+});
+
+// 3.0 定义一个账号组件写法3（推荐写法）
+Vue.component('account',{
+	template:'#account',
+	//注意：在组件中使用data定义的是一个方法而不是一个对象，否则无效果
+	data:function(){
+		return {
+			msg:'账户组件页面'
+		}
+    },
+    
+	methods:{
+		login:function(){
+			alert('login')
+		}
+	}
+});
+
+
+new Vue({
+    el :'#app',
+    data:{
+        id:100,
+		cname:'login'
+    },
+    methods:{
+        getdom:function(){
+			// 获取到id=div1的div对象
+			// 有两种方式可以完成
+			//1、通过传统的document
+			console.log(document.getElementById('div1').innerHTML);
+
+			// 2、vuejs的写法
+			console.log(this.$refs.mydiv.innerHTML);
+		},
+		getcom:function(){
+			console.log(this.$refs.mysub.subname);
+		},
+        getdata:function(input){
+			    alert(input);
+            }
+        },
+	components:{
+		'sub':{
+            template:'#sub',
+            methods:{
+				senddata:function(){
+					// 将hello传值给父组件
+					this.$emit('send','hello');
+				}
+			},
+			 props:['id'] //1.0 负责接收父组件传入的值
+        },
+        'com':{
+            template:'#com',
+            data:function(){
+				return {
+				    subname:'子组件名称'
+                }
+            },
+			 props:['id']
+        }
+	}
+});
+</script>
+</html>
