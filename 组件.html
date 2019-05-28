@@ -3,7 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
-	<script src="vue.js"></script>
+    <script src="vue.min.js"></script>
+    <!-- <script src="vue1026.js"></script> -->
 </head>
 <body>
     <template id="account">
@@ -12,20 +13,19 @@
                 <a href="#" @click="login">登录</a>  |  <a href="#">注册</a>                
         </div>              
     </template>
-    <template id="sub">
+    <template id="test">
         <div>
-            <h1>{{id}}</h1><br>
-            <button @click="senddata">发送数据给父组件</button>
+                <h1>{{key}}</h1><br>
+                <button @click="senddata">发送数据给父组件</button>
         </div>
     </template>
 
     <template id="com">
-            <div>
+        <div>
                 <h1>{{subname}}</h1><br>
-                <h1>这是一个子组件</h1>
-                 
-            </div>
-        </template>
+                <h1>这是一个子组件</h1>       
+        </div>
+    </template>
 	<div id="app">
             
 	    <account></account>
@@ -43,11 +43,10 @@
 		<div ref="mydiv" id="div1">hello v-el</div>
 
 	    <button @click="getcom">获取组件对象</button>
-        <com ref="mysub"></com>
+        <com ref="mycom"></com>
         
         <!-- 2.0 通过在父组件中调用子组件的时候利用 :绑定对应的props中定义的参数再讲值传递给子组件即可 -->
-        <sub :id="id"> </sub>
-        <sub v-on:send="getdata"></sub>
+        <test :key="id"  v-on:send="getdata"> </test>
 
 
 	</div>
@@ -76,14 +75,23 @@ Vue.component('account',{
 			msg:'账户组件页面'
 		}
     },
-    
 	methods:{
 		login:function(){
 			alert('login')
 		}
 	}
 });
-
+Vue.component('test',{
+    template:'#test',
+    props:['key'], //1.0 负责接收父组件传入的值
+    methods:{
+	    senddata:function(){
+		// 将hello传值给父组件
+		this.$emit('send','hello');
+		}
+	} 
+});
+ 
 
 new Vue({
     el :'#app',
@@ -109,24 +117,14 @@ new Vue({
             }
         },
 	components:{
-		'sub':{
-            template:'#sub',
-            methods:{
-				senddata:function(){
-					// 将hello传值给父组件
-					this.$emit('send','hello');
-				}
-			},
-			 props:['id'] //1.0 负责接收父组件传入的值
-        },
+		
         'com':{
             template:'#com',
             data:function(){
 				return {
 				    subname:'子组件名称'
                 }
-            },
-			 props:['id']
+            } 
         }
 	}
 });
