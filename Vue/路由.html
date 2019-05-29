@@ -1,0 +1,128 @@
+<head>
+        <meta charset="UTF-8">
+        <title>Document</title>
+        <script src="vue.min.js"></script>
+        <script src="vue-router.js"></script>
+    </head>
+
+    <body>
+        <div id="app">
+         <!-- <a href="#" v-link="{path:'/login'}">登录</a>
+         <a href="#" v-link="{path:'/register/200'}">注册</a> -->
+         <router-link to="/login">登录</router-link>
+         <router-link to="/login/profile">profile</router-link>
+         <router-link to="/register/200">注册</router-link>
+         <router-view></router-view>
+
+         <input type="text" v-model.lazy="firstName" @keydown.enter="test">
+		<input type="text" v-model="lastName">
+        {{fullName}}<br>
+        {{computedValue}}
+        </div>
+    </body>
+    <script>
+// 0. 如果使用模块化机制编程，导入Vue和VueRouter，要调用 Vue.use(VueRouter)
+
+// 1. 定义 (路由) 组件。
+// 可以从其他文件 import 进来
+const common = { 
+    template:'<h1>公共组件:{{$route.path}}</h1>'
+}
+const login = { template:`'<div>
+                <h1>登录页面</h1>
+                <router-view></router-view>
+                </div>  '
+                ` 
+            }
+const register = { 
+    template:`'<div>
+            <h1>注册页面{{id}} </h1>
+            直接获取：{{ $route.params.id }}   
+            </div>
+    '`,
+	data:function(){
+		return {
+			id:0
+		}
+	},
+	created:function(){
+        this.id = this.$route.params.id;
+         
+    }  
+}
+
+
+// 2. 定义路由
+// 每个路由应该映射一个组件。 其中"component" 可以是
+// 通过 Vue.extend() 创建的组件构造器，
+// 或者，只是一个组件配置对象。
+// 我们晚点再讨论嵌套路由。
+const routes = [
+  { path: '/login', component: login,
+    children: [
+        {
+          // 当 /user/:id/profile 匹配成功，
+          // UserProfile 会被渲染在 User 的 <router-view> 中
+          path: 'profile',
+          component: common
+        },
+        {
+          // 当 /user/:id/posts 匹配成功
+          // UserPosts 会被渲染在 User 的 <router-view> 中
+          path: 'posts',
+          component: common
+        }
+      ] },
+  { path: '/register/:id', component: register }
+]
+
+// 3. 创建 router 实例，然后传 `routes` 配置
+// 你还可以传别的配置参数, 不过先这么简单着吧。
+const router = new VueRouter({
+  routes // (缩写) 相当于 routes: routes
+})
+
+// 4. 创建和挂载根实例。
+// 记得要通过 router 配置参数注入路由，
+// 从而让整个应用都有路由功能
+const app = new Vue({
+  router,
+  data:{
+		firstName :'itcast',
+		lastName:'heima',
+        fullName :'itcast.heima',
+    },
+    methods: {
+        test:function(event){
+            console.log('methods:',event);
+            alert("test");
+        }
+    },
+    computed:{
+		computedValue:function(){
+            console.log('计算属性执行');
+			return '计算属性：'+this.firstName + this.lastName;
+		}
+    },
+  watch:{
+		'firstName':function(newval,oldval){
+			 console.log(newval,oldval);
+			this.fullName = this.firstName + this.lastName;
+		},
+		'lastName':function(newval,oldval){
+			 console.log(newval,oldval);
+			this.fullName = this.firstName + this.lastName;
+        },
+        '$route':function(newroute,oldroute){
+			 console.log('route:',newroute,oldroute);
+			// 将来就可以在这个函数中获取到当前的路由规则字符串是谁了
+			// 那么就可以针对一些特定的页面做一些特定的处理
+		}
+    },
+    updated() {
+        console.log('updated');
+    },
+}).$mount('#app')
+
+    </script>
+    </html>
