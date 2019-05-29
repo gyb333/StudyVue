@@ -29,7 +29,7 @@ module: {
             {  
                 loader: 'url-loader',  
                 options: {  
-                    limit: '102400' //小于100k 打包到build.js里面
+                    limit: '20480' //小于20k 打包到build.js里面
                 }  
             },  
         ]  
