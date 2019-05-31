@@ -11,6 +11,7 @@ var res = document.querySelector('#res');
 require('../statics/css/site.css');
 require('../statics/css/site.scss');
 require('../statics/css/site.less');
+require('../statics/mui/css/icons-extra.css');
 
 bt.onclick=function(){
 
