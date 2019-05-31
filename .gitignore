@@ -1,3 +1,4 @@
 */node_modules/*
 WebPack/dist/*
 .git
+*/package-lock.json
