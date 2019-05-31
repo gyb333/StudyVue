@@ -9,6 +9,7 @@
   },
   "author": "",
   "license": "ISC",
+  "//": "编译时需要的组件",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
@@ -32,7 +33,10 @@
     "webpack": "^3.8.0",
     "webpack-dev-server": "^2.9.7"
   },
+  "///": "运行时需要的组件",
   "dependencies": {
-    "vue": "^2.6.10"
+    "mint-ui": "^2.2.13",
+    "vue": "^2.6.10",
+    "vue-router": "^3.0.6"
   }
 }
