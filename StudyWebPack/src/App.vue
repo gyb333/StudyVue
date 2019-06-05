@@ -8,6 +8,11 @@
         <router-link to="/login">登录</router-link>
 		<router-link to="/register">注册</router-link>
 
+		<!--1.0.1 统一的返回按钮-->
+		<div v-if="isshow" id="back">
+			<a href="javascript:void(0)" @click="backto">返回</a>
+		</div>
+
 		<!-- 路由占位符 -->
 		<router-view></router-view>
 
@@ -71,7 +76,7 @@
 				</span>
 				<span class="mui-tab-label">会员</span>
 			</router-link>
-			<router-link class="mui-tab-item" to="/shopcar">
+			<router-link class="mui-tab-item" to="/shopcar/car">
 				<span class="mui-icon mui-icon-contact">
 					<span class="mui-badge">0</span>
 				</span>
@@ -99,7 +104,17 @@
 	export default{  // es6的导出对象的写法
 		data(){  //等价于 es5的 data:function(){
 			return {
-				msg :'hello vuejs111111'
+				msg :'hello vuejs111111',
+				isshow : false
+			}
+		},
+		watch:{
+			'$route':function(newroute,oldroute){
+				if(newroute.path.toLowerCase() == '/home'){
+					this.isshow = false;
+				}else{
+					this.isshow = true;
+				}
 			}
 		},
 		methods:{
@@ -107,6 +122,10 @@
              subscribe:subscribe,
              tip:function(){
 				Toast({message:'你好',position:'bottom',iconClass:'mintui mintui-success'});
+			},
+			backto(){
+//				利用路由对象中的go(-1)来实现返回到上一级页面(这个方法是vue-router的方法)
+				this.$router.go(-1);
 			}
 		},
 		created(){
@@ -120,4 +139,17 @@
 	.red{
 		color: red;
 	}
+	/*当前页面的css样式写到这里，其中scoped表示这个里面写的css代码只是在当前组件页面上有效，不会去影响到其他组件页面*/
+#back{
+	width: 60px;
+	position: absolute;
+	top:10px;
+	left:10px;
+	z-index: 101;
+}
+#back a{
+	color:white;
+	font-size: 16px;
+	font-weight: bold;
+}
 </style>

@@ -15,6 +15,11 @@
 				</li>
 				<li class="inputli">
 					购买数量： <inputnumber v-on:dataobj="getcount" class="inputnumber"></inputnumber>
+					<transition name="show"
+					 @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter"
+					>
+						<div v-if="isshow" class="ball"></div>
+					</transition>
 				</li>
 				<li>
 					<mt-button type="primary" size="small">立即购买</mt-button>
@@ -79,6 +84,25 @@
 			this.getinfo();
 		},
 		methods:{
+			//			动画3个方法
+			beforeEnter(el){
+//				设定小球的初始位置
+				el.style.transform = "translate(0px,0px)";
+			},
+			enter(el,done){
+//				保证小球出现动画
+				el.offsetWidth;
+
+//				设置小球的结束位置
+				el.style.transform = "translate(75px,366px)";
+
+//				结束动画
+				done();
+			},
+			afterEnter(el){
+//			重置小球的初始状态
+				this.isshow = !this.isshow;
+			},
 //			加入购物车方法
 			toshopcar(){
 //				1.0 触发事件
@@ -87,6 +111,9 @@
 				valueObj.goodsid = this.id;
 				valueObj.count = this.inputNumberCount;
 				setItem(valueObj);
+
+//				3.0 实现小球动画
+				this.isshow = !this.isshow;
 			},
 //			获取inputnumber组件中传入的值
 			getcount(count){
